@@ -1,5 +1,5 @@
 try:
-    from langchain.memory import ConversationBufferMemory
+    from langchain.memory import ConversationBufferMemory # type: ignore
 except ImportError:  # Allows running the agent before dependencies are installed.
     ConversationBufferMemory = None
 
