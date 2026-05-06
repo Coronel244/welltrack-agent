@@ -19,6 +19,7 @@ Al terminar, el endpoint devuelve `is_final: true` y un resumen con los datos ca
 
 ```bash
 pip install -r requirements.txt
+copy .env.example .env
 python run.py
 ```
 
@@ -26,6 +27,12 @@ La API queda disponible en:
 
 ```text
 http://127.0.0.1:8000
+```
+
+Variable de entorno requerida en `.env`:
+
+```env
+OPENAI_API_KEY=tu_api_key_aqui
 ```
 
 ## Probar el agente sin API
