@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 
 from app.agent import QUESTIONS, WELCOME_MESSAGE, generate_summary, get_next_question
 from app.memory import sessions
@@ -7,14 +8,27 @@ from app.schemas import ChatRequest, ChatResponse
 app = FastAPI(title="WellTrack Agent")
 
 
+@app.exception_handler(Exception)
+def global_error_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={
+            "response": "Error interno del servidor",
+            "is_final": False,
+            "summary": None,
+        },
+    )
+
+
 def _validate_request(request: ChatRequest) -> tuple[str, str]:
     session_id = request.session_id.strip()
     message = request.message.strip()
 
-    if not session_id:
-        raise HTTPException(status_code=400, detail="session_id no puede estar vacío.")
-    if not message:
-        raise HTTPException(status_code=400, detail="message no puede estar vacío.")
+    if not session_id or not message:
+        raise HTTPException(
+            status_code=400,
+            detail="session_id y message son obligatorios",
+        )
 
     return session_id, message
 
@@ -45,7 +59,7 @@ def chat(request: ChatRequest):
     elif step == 1:
         if not message.isdigit():
             return ChatResponse(
-                response="Por favor ingresa tu edad como número.",
+                response="Por favor ingresa una edad válida (número).",
                 is_final=False,
                 summary=None,
             )
